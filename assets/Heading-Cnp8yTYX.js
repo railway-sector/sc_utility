@@ -1,1 +1,0 @@
-import{dS as i,dT as l,dU as o,dV as c}from"./index-BKLYFtwZ.js";function u({level:e,class:n,...t},s){const r=a(e);return i(`h${r}`,{...t,"aria-level":String(r),class:l(o.heading,n),role:"heading"},s)}function a(e){return c(Math.ceil(e),1,6)}function f(e,n=1){return a(e+n)}export{f as l,u as s};

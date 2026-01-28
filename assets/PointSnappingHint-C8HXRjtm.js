@@ -1,1 +1,0 @@
-import{hj as i}from"./index-BKLYFtwZ.js";import{s as n}from"./euclideanLengthMeasurementUtils-CmgiGH8E.js";class s extends n{constructor(t,o,r){super(o,r),this.point=t}equals(t){return t instanceof s&&i(this.point,t.point)}}export{s as n};
