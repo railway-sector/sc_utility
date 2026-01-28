@@ -625,14 +625,14 @@ const Chart = () => {
             <dd
               style={{
                 color: valueLabelColor,
-                fontSize: "1.9rem",
+                fontSize: "2.1rem",
                 fontWeight: "bold",
                 fontFamily: "calibri",
                 lineHeight: "1.2",
                 margin: "auto",
               }}
             >
-              {thousands_separators(progress[1])}
+              {thousands_separators(progress[1])} %
             </dd>
             <div>({thousands_separators(progress[0])})</div>
           </dl>
