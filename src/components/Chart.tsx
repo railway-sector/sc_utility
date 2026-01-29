@@ -6,9 +6,9 @@ import {
   utilityPointLayer,
   utilityLineLayer,
 } from "../layers";
-// import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
-import FeatureFilter from "@arcgis/core/layers/support/FeatureFilter";
-import Query from "@arcgis/core/rest/support/Query";
+
+// import FeatureFilter from "@arcgis/core/layers/support/FeatureFilter";
+// import Query from "@arcgis/core/rest/support/Query";
 import * as am5 from "@amcharts/amcharts5";
 import * as am5xy from "@amcharts/amcharts5/xy";
 import am5themes_Animated from "@amcharts/amcharts5/themes/Animated";
@@ -22,6 +22,7 @@ import {
   generateUtilPointChartData,
   generateUtilPointProgress,
   thousands_separators,
+  utilLayerViewQueryFeatureHighlight,
   zoomToLayer,
 } from "../Query";
 import { ArcgisScene } from "@arcgis/map-components/dist/components/arcgis-scene";
@@ -49,18 +50,6 @@ const Chart = () => {
   const [progress, setProgress] = useState([]);
 
   const chartID = "utility-bar";
-
-  // const [featureLayer, setFeatureLayer] =
-  //   useState<FeatureLayer>(utilityPointLayer1);
-  // const featureLayer = useRef<FeatureLayer>(utilityPointLayer1);
-  // const [pointFeatureLayer, setPointFeatureLayer] =
-  //   useState<FeatureLayer>(utilityPointLayer1);
-  // const [lineFeatureLayer, setLineFeatureLayer] =
-  //   useState<FeatureLayer>(utilityLineLayer1);
-  // const [pointFeatureLayer1, setPointFeatureLayer1] =
-  //   useState<FeatureLayer>(utilityPointLayer);
-  // const [lineFeatureLayer1, setLineFeatureLayer1] =
-  //   useState<FeatureLayer>(utilityLineLayer);
 
   useEffect(() => {
     if (type === "Point") {
@@ -359,217 +348,14 @@ const Chart = () => {
               ? qCpCompanyUtiltypeStatus
               : qCpCompanyUtiltypeStatusType;
 
-        // Define Query
-        // Define Query
-        // const query = featureLayer.createQuery();
-        // query.where = qExpression;
-        //----- Utility Point Feature Filter ------//
-        let highlightSelect: any;
-        arcgisScene?.whenLayerView(utilityPointLayer).then((layerView: any) => {
-          utilityPointLayer.queryFeatures().then((results: any) => {
-            if (results.features.length === 0) {
-              return;
-            } else {
-              const lengths = results.features;
-              const rows = lengths.length;
-
-              const objID = [];
-              for (let i = 0; i < rows; i++) {
-                const obj = results.features[i].attributes.OBJECTID;
-                objID.push(obj);
-              }
-
-              const queryExt = new Query({
-                objectIds: objID,
-              });
-
-              utilityPointLayer.queryExtent(queryExt).then((result: any) => {
-                if (result.extent) {
-                  arcgisScene.view.goTo(result.extent);
-                }
-              });
-
-              highlightSelect && highlightSelect.remove();
-              highlightSelect = layerView.highlight(objID);
-
-              arcgisScene?.view.on("click", () => {
-                layerView.filter = new FeatureFilter({
-                  where: undefined,
-                });
-                highlightSelect.remove();
-              });
-            }
-          });
-          layerView.filter = new FeatureFilter({
-            where: qExpression,
-          });
-
-          // For initial state, we need to add this
-          arcgisScene?.view.on("click", () => {
-            layerView.filter = new FeatureFilter({
-              where: undefined,
-            });
-            highlightSelect !== undefined
-              ? highlightSelect.remove()
-              : console.log("");
-          });
-        });
-
-        let highlightSelect11: any;
-        arcgisScene?.view
-          .whenLayerView(utilityPointLayer1)
-          .then((layerView: any) => {
-            utilityPointLayer1.queryFeatures().then((results: any) => {
-              if (results.features.length === 0) {
-                return;
-              } else {
-                const lengths = results.features;
-                const rows = lengths.length;
-
-                const objID = [];
-                for (let i = 0; i < rows; i++) {
-                  const obj = results.features[i].attributes.OBJECTID;
-                  objID.push(obj);
-                }
-
-                const queryExt = new Query({
-                  objectIds: objID,
-                });
-
-                utilityPointLayer1.queryExtent(queryExt).then((result: any) => {
-                  if (result.extent) {
-                    arcgisScene?.view.goTo(result.extent);
-                  }
-                });
-
-                highlightSelect && highlightSelect.remove();
-                highlightSelect11 = layerView.highlight(objID);
-
-                arcgisScene?.view.on("click", () => {
-                  layerView.filter = new FeatureFilter({
-                    where: undefined,
-                  });
-                  highlightSelect11.remove();
-                });
-              }
-            });
-            layerView.filter = new FeatureFilter({
-              where: qExpression,
-            });
-
-            // For initial state, we need to add this
-            arcgisScene?.view.on("click", () => {
-              layerView.filter = new FeatureFilter({
-                where: undefined,
-              });
-              highlightSelect11 !== undefined
-                ? highlightSelect11.remove()
-                : console.log("");
-            });
-          });
-
-        //----- Utility Line Feature Filter ------//
-        arcgisScene?.whenLayerView(utilityLineLayer).then((layerView: any) => {
-          //arrLviews.push(layerView);
-          let highlightSelect2: any;
-          utilityLineLayer.queryFeatures().then((results: any) => {
-            if (results.features.length === 0) {
-              return;
-            } else {
-              const lengths = results.features;
-              const rows = lengths.length;
-
-              const objID = [];
-              for (let i = 0; i < rows; i++) {
-                const obj = results.features[i].attributes.OBJECTID;
-                objID.push(obj);
-              }
-
-              const queryExt = new Query({
-                objectIds: objID,
-              });
-
-              utilityLineLayer.queryExtent(queryExt).then((result: any) => {
-                if (result.extent) {
-                  arcgisScene?.view.goTo(result.extent);
-                }
-              });
-
-              highlightSelect && highlightSelect.remove();
-              highlightSelect2 = layerView.highlight(objID);
-
-              arcgisScene?.view.on("click", () => {
-                layerView.filter = new FeatureFilter({
-                  where: undefined,
-                });
-                highlightSelect2.remove();
-              });
-            }
-          });
-          layerView.filter = new FeatureFilter({
-            where: qExpression,
-          });
-
-          // For initial state, we need to add this
-          arcgisScene?.view.on("click", () => {
-            layerView.filter = new FeatureFilter({
-              where: undefined,
-            });
-            highlightSelect2 !== undefined
-              ? highlightSelect2.remove()
-              : console.log("");
-          });
-        });
-
-        arcgisScene?.whenLayerView(utilityLineLayer1).then((layerView: any) => {
-          let highlightSelect22: any;
-          utilityLineLayer1.queryFeatures().then((results: any) => {
-            if (results.features.length === 0) {
-              return;
-            } else {
-              const lengths = results.features;
-              const rows = lengths.length;
-
-              const objID = [];
-              for (let i = 0; i < rows; i++) {
-                const obj = results.features[i].attributes.OBJECTID;
-                objID.push(obj);
-              }
-
-              const queryExt = new Query({
-                objectIds: objID,
-              });
-
-              utilityLineLayer1.queryExtent(queryExt).then((result: any) => {
-                if (result.extent) {
-                  arcgisScene?.view.goTo(result.extent);
-                }
-              });
-
-              highlightSelect && highlightSelect.remove();
-              highlightSelect22 = layerView.highlight(objID);
-
-              arcgisScene?.view.on("click", () => {
-                layerView.filter = new FeatureFilter({
-                  where: undefined,
-                });
-                highlightSelect22.remove();
-              });
-            }
-          });
-          layerView.filter = new FeatureFilter({
-            where: qExpression,
-          });
-
-          // For initial state, we need to add this
-          arcgisScene?.view.on("click", () => {
-            layerView.filter = new FeatureFilter({
-              where: undefined,
-            });
-            highlightSelect22 !== undefined
-              ? highlightSelect22.remove()
-              : console.log("");
-          });
+        utilLayerViewQueryFeatureHighlight({
+          pointLayer1: utilityPointLayer,
+          pointLayer2: utilityPointLayer1,
+          lineLayer1: utilityLineLayer,
+          lineLayer2: utilityLineLayer1,
+          qExpression: qExpression,
+          type: type,
+          view: arcgisScene?.view,
         });
       });
       legend.data.push(series);

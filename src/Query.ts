@@ -11,6 +11,8 @@ import StatisticDefinition from "@arcgis/core/rest/support/StatisticDefinition";
 import Query from "@arcgis/core/rest/support/Query";
 import Collection from "@arcgis/core/core/Collection";
 import ActionButton from "@arcgis/core/support/actions/ActionButton";
+import FeatureFilter from "@arcgis/core/layers/support/FeatureFilter";
+import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
 
 // Updat date
 export async function dateUpdate() {
@@ -728,4 +730,82 @@ export const defineActions = (event: any) => {
   item.title === "NGCP Permanent Relocation"
     ? (item.visible = false)
     : (item.visible = true);
+};
+
+// Highlight selected utility feature in the Chart
+export const highlightSelectedUtil = (
+  featureLayer: any,
+  qExpression: any,
+  view: any,
+) => {
+  const query = featureLayer.createQuery();
+  query.where = qExpression;
+  let highlightSelect: any;
+  view?.whenLayerView(featureLayer).then((layerView: any) => {
+    featureLayer?.queryObjectIds(query).then((results: any) => {
+      const objID = results;
+
+      const queryExt = new Query({
+        objectIds: objID,
+      });
+
+      try {
+        featureLayer?.queryExtent(queryExt).then((result: any) => {
+          if (result?.extent) {
+            view?.goTo(result.extent);
+          }
+        });
+      } catch (error) {
+        console.error("Error querying extent for point layer:", error);
+      }
+
+      highlightSelect && highlightSelect.remove();
+      highlightSelect = layerView.highlight(objID);
+    });
+
+    layerView.filter = new FeatureFilter({
+      where: qExpression,
+    });
+
+    // For initial state, we need to add this
+    view?.on("click", () => {
+      layerView.filter = new FeatureFilter({
+        where: undefined,
+      });
+      highlightSelect && highlightSelect.remove();
+    });
+  });
+};
+
+type layerViewQueryProps = {
+  pointLayer1: FeatureLayer;
+  pointLayer2: FeatureLayer;
+  lineLayer1: FeatureLayer;
+  lineLayer2: FeatureLayer;
+  qExpression: any;
+  type: any;
+  view: any;
+};
+
+export const utilLayerViewQueryFeatureHighlight = ({
+  pointLayer1,
+  pointLayer2,
+  lineLayer1,
+  lineLayer2,
+  qExpression,
+  type,
+  view,
+}: layerViewQueryProps) => {
+  if (!type) {
+    highlightSelectedUtil(pointLayer1, qExpression, view);
+    highlightSelectedUtil(pointLayer2, qExpression, view);
+    highlightSelectedUtil(lineLayer1, qExpression, view);
+    highlightSelectedUtil(lineLayer2, qExpression, view);
+  } else if (type === "Point") {
+    highlightSelectedUtil(pointLayer1, qExpression, view);
+    highlightSelectedUtil(pointLayer2, qExpression, view);
+  } else if (type === "Line") {
+    highlightSelectedUtil(lineLayer1, qExpression, view);
+    highlightSelectedUtil(lineLayer2, qExpression, view);
+  }
 };
